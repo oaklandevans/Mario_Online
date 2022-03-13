@@ -421,6 +421,23 @@ class Fireball extends Sprite
 
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+function sound(src) {
+	this.sound = document.createElement("audio");
+	this.sound.src = src;
+	this.sound.setAttribute("preload", "auto");
+	this.sound.setAttribute("controls", "none");
+	this.sound.style.display = "none";
+	document.body.appendChild(this.sound);
+	this.play = function(){
+		this.sound.play();
+	}
+	this.stop = function(){
+		this.sound.pause();
+	}
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -429,6 +446,9 @@ class Model
 {
 	constructor()
 	{
+		// set theme song
+		let gameThemeSong = new sound("Super-Mario-Bros.mp3");
+		
 		this.sprites = [];
 
 		// create mario
@@ -462,6 +482,9 @@ class Model
 		this.sprites.push(this.goomba);
 		this.goomba = new Goomba(500, 50, 100, 115, this);
 		this.sprites.push(this.goomba);
+
+		// start theme song
+		gameThemeSong.play();
 	}
 
 	update()
