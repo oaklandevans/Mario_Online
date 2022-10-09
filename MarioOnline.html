@@ -661,16 +661,12 @@ class Controller
 		this.ctrl = false;
 		let self = this;
 		let gp = null;
-		let gamepad = null;
-		let gamepads = null;
 		
 		document.addEventListener('keydown', function(event) { self.keyDown(event); }, false);
 		document.addEventListener('keyup', function(event) { self.keyUp(event); }, false);
 
 		window.addEventListener("gamepadconnected", (e) => {
 			this.gp = navigator.getGamepads()[e.gamepad.index];
-			// this.gamepads = navigator.getGamepads()[e.gamepad.index];
-			// this.gamepad = gamepads[0];
 			console.log(
 				"Gamepad connected at index %d: %s. %d buttons, %d axes.",
 				this.gp.index,
@@ -680,52 +676,11 @@ class Controller
 			);
 		});
 
-		// window.addEventListener("gamepaddisconnected", (e) => {
-  		// 	console.log("Gamepad disconnected from index %d: %s",
-    	// 	e.gamepad.index, e.gamepad.id);
-		// });
-
-		// function gamepadHandler(event, connecting) {
-		// 	gamepad = event.gamepad;
-		// 	// Note:
-		// 	// gamepad === navigator.getGamepads()[gamepad.index]
-
-		// 	if (connecting) {
-		// 		gamepads[gamepad.index] = gamepad;
-		// 	} else {
-		// 		delete gamepads[gamepad.index];
-		// 	}
-		// }
-
-		// window.addEventListener("gamepadconnected", (e) => { gamepadHandler(e, true); }, false);
-		// window.addEventListener("gamepaddisconnected", (e) => { gamepadHandler(e, false); }, false);
-
-		// if (gamepad.buttons[0]) {
-		// 	console.log('0 Button Pressed');
-		// } 
-		// else if (buttonPressed(gamepad?.buttons[2])) {
-		// 	console.log('2 Button Pressed');
-		// }
-		// if (buttonPressed(gamepad?.buttons[1])) {
-		// 	console.log('1 Button Pressed');
-		// } else if (buttonPressed(gamepad?.buttons[3])) {
-		// 	console.log('3 Button Pressed');
-		// }
-
+		window.addEventListener("gamepaddisconnected", (e) => {
+  			console.log("Gamepad disconnected from index %d: %s",
+    		e.gamepad.index, e.gamepad.id);
+		});
 	}
-
-	// buttonPressed(b) {
-	// 	if (typeof b === "object") {
-	// 		return b.pressed;
-	// 	}
-	// 	return b === 1.0;
-	// }
-
-	// buttonDown(event) {
-	// 	if(event) {
-	// 		console.log(event);
-	// 	}
-	// }
 
 	keyDown(event)
 	{
@@ -749,8 +704,13 @@ class Controller
 
 	update()
 	{
+		// Update the gamepad
+		this.gp = navigator.getGamepads()[0];
+
+		// Store previous x and y coordinates
 		this.model.mario.rewind(this.model.mario.x, this.model.mario.y);
 		
+		// check for keyboard events
 		if(this.key_right) 
 			this.model.mario.moveRight();
 
@@ -773,8 +733,22 @@ class Controller
 			}
 		}
 
+		// check for gamepad events
 		if (this.gp?.buttons[0]?.pressed) {
-			console.log('0 Button Pressed');
+			this.model.mario.jump();
+		} 
+		if (this.gp?.buttons[2]?.pressed) {
+			if(this.model.mario.reloaded)
+			{
+				this.model.addFireball();
+				this.model.mario.reloaded = false;
+			}
+		} 
+		if (this.gp?.buttons[14]?.pressed) {
+			this.model.mario.moveLeft();
+		} 
+		if (this.gp?.buttons[15]?.pressed) {
+			this.model.mario.moveRight();
 		} 
 	}
 }
