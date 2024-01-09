@@ -72,6 +72,68 @@ class Tube extends Sprite
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+class TubeInverted extends Sprite
+{
+	constructor(x, y, w, h, m)
+	{
+		super(x, y, w, h, m);
+		this.model = m;
+
+		// load tube image
+		this.image = new Image();
+		this.image.src = 'tube_inverted.png';
+	}
+
+	update()
+	{
+
+	}
+
+	isTube()
+	{
+		return true;
+	}
+
+	draw(ctx)
+	{
+		ctx.drawImage(this.image, (this.x - this.model.mario.x + this.model.mario.marioOffset), this.y);
+	}
+
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class Castle extends Sprite
+{
+	constructor(x, y, w, h, m)
+	{
+		super(x, y, w, h, m);
+		this.model = m;
+
+		// load castle image
+		this.image = new Image();
+		this.image.src = 'castle.png';
+	}
+
+	update()
+	{
+
+	}
+
+	isTube()
+	{
+		return true;
+	}
+
+	draw(ctx)
+	{
+		ctx.drawImage(this.image, (this.x - this.model.mario.x + this.model.mario.marioOffset), this.y);
+	}
+
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class Goomba extends Sprite
 {
 	constructor(x, y, w, h, m)
@@ -85,12 +147,16 @@ class Goomba extends Sprite
 		this.flip = false;
 		this.onFire = false;
 		this.onFireFor = 0;
+		this.isSmashed = false;
+		this.isSmashedFor = 0;
 
 		// load goomba images
 		this.imageGoomba = new Image();
 		this.imageGoomba.src = 'goomba.png';
 		this.imageGoombaFire = new Image();
 		this.imageGoombaFire.src = 'goomba_fire.png';
+		this.imageGoombaSmashed = new Image();
+		this.imageGoombaSmashed.src = 'goomba_fire.png';
 	}
 
 	update()
@@ -134,9 +200,15 @@ class Goomba extends Sprite
 			this.onFireFor++;
             ctx.drawImage(this.imageGoombaFire, (this.x - this.model.mario.x + this.model.mario.marioOffset), this.y);
         }
+		else if(this.isSmashed)
+		{
+			this.isSmashedFor++;
+			ctx.drawImage(this.imageGoombaSmashed, (this.x - this.model.mario.x + this.model.mario.marioOffset), this.y);
+		}
         else
         {
 			this.onFireFor = 0;
+			this.isSmashedFor = 0;
             ctx.drawImage(this.imageGoomba, (this.x - this.model.mario.x + this.model.mario.marioOffset), this.y);
         }
 	}
@@ -170,12 +242,14 @@ class Goomba extends Sprite
 
 	moveRight()
 	{
-		this.x += 5;
+		if(!this.isSmashed)
+			this.x += 5;
 	}
 
 	moveLeft()
 	{
-		this.x -= 5;
+		if(!this.isSmashed)
+			this.x -= 5;
 	}
 
 	rewind(x, y)
@@ -188,6 +262,10 @@ class Goomba extends Sprite
     {
         this.onFire = true;
     }
+
+	smashGoomba() {
+		this.isSmashed = true;
+	}
 
 
 }
@@ -456,10 +534,10 @@ function sound(src) {
 
 class Model
 {
+	// set theme song
+	gameThemeSong = new sound("Super-Mario-Bros.mp3");
 	constructor()
 	{
-		// set theme song
-		let gameThemeSong = new sound("Super-Mario-Bros.mp3");
 		
 		this.sprites = [];
 
@@ -470,11 +548,9 @@ class Model
 		// create tubes
 		this.tube = new Tube(300, 250, 60, 400, this);
 		this.sprites.push(this.tube);
+		this.tubeInverted = new TubeInverted(500, -200, 60, 400, this);
+		this.sprites.push(this.tubeInverted);
 		this.tube = new Tube(800, 200, 60, 400, this);
-		this.sprites.push(this.tube);
-		this.tube = new Tube(2400, 250, 60, 400, this);
-		this.sprites.push(this.tube);
-		this.tube = new Tube(2000, 150, 60, 400, this);
 		this.sprites.push(this.tube);
 		this.tube = new Tube(1100, 250, 60, 400, this);
 		this.sprites.push(this.tube);
@@ -482,21 +558,27 @@ class Model
 		this.sprites.push(this.tube);
 		this.tube = new Tube(1700, 300, 60, 400, this);
 		this.sprites.push(this.tube);
+		this.tube = new Tube(2000, 150, 60, 400, this);
+		this.sprites.push(this.tube);
+		this.tubeInverted = new TubeInverted(2200, -200, 60, 400, this);
+		this.sprites.push(this.tubeInverted);
+		this.tube = new Tube(2400, 250, 60, 400, this);
+		this.sprites.push(this.tube);
 
 		// create goombas
+		this.goomba = new Goomba(500, 50, 100, 115, this);
+		this.sprites.push(this.goomba);
+		this.goomba = new Goomba(1200, 50, 100, 115, this);
+		this.sprites.push(this.goomba);
+		this.goomba = new Goomba(1250, 50, 100, 115, this);
+		this.sprites.push(this.goomba);
 		this.goomba = new Goomba(1500, 50, 100, 115, this);
 		this.sprites.push(this.goomba);
 		this.goomba = new Goomba(1800, 50, 100, 115, this);
 		this.sprites.push(this.goomba);
-		this.goomba = new Goomba(1250, 50, 100, 115, this);
-		this.sprites.push(this.goomba);
-		this.goomba = new Goomba(1200, 50, 100, 115, this);
-		this.sprites.push(this.goomba);
-		this.goomba = new Goomba(500, 50, 100, 115, this);
-		this.sprites.push(this.goomba);
 
 		// start theme song
-		gameThemeSong.play();
+		this.gameThemeSong.play();
 	}
 
 	update()
@@ -508,6 +590,15 @@ class Model
 			
 			// check for collision between mario and tube
 			if(this.sprites[i] instanceof Tube)
+			{
+				let t = this.sprites[i];
+				if(this.CollisionDetection(this.mario, t))
+				{
+					this.mario.getOutOfTube(t);
+				}
+			}
+
+			else if(this.sprites[i] instanceof TubeInverted)
 			{
 				let t = this.sprites[i];
 				if(this.CollisionDetection(this.mario, t))
@@ -529,6 +620,15 @@ class Model
 						if(this.CollisionDetection(g, t))
 						{
 							g.getOutOfTube(t);
+						}
+					}
+
+					if(this.sprites[j] instanceof Mario)
+					{
+						let m = this.sprites[j];
+						if(this.CollisionDetection(g, m))
+						{
+							g.smashGoomba();
 						}
 					}
 				}
@@ -771,6 +871,8 @@ class Game
 		this.controller.update();
 		this.model.update();
 		this.view.update();
+		// start theme song
+		this.model.gameThemeSong.play();
 	}
 }
 
